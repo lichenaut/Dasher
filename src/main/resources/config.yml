@@ -1,0 +1,52 @@
+#Turn Dasher off.
+disable-plugin: false
+
+
+################
+#Dasher Options#
+################
+
+#If true, dash sound will be played at the location of the dash for nearby players to hear.
+#If false, dash sound will be played only to the player that dashed.
+world-sounds: true
+
+#Sequence Template
+#  name:                <-- Mandatory.
+#    permission: ''
+#    item-name: ''
+#    item-material: ''
+#    triggers:           <-- Mandatory: one or more of the following.
+#      - 'leftclick'
+#      - 'rightclick'
+#      - 'crouch'
+#      - 'toggleflight' <-- Will work even if the player does not usually have /fly.
+#    block-heights:     <-- Mandatory: must have at least one entry.
+#      - #
+#      - ...
+#    loop: true/false
+#    sound: ''
+#    particle-effects:
+#      - ''
+#      - ...
+#    status-effects: + position they end up?? possible?
+#      status-name: #ticks
+#    damage: #
+#    experience-cost: #
+#    add-momentum: true/false
+#    MONEY FEATURE COMING
+# invulnerability, no fall damage, sequence variables vs dash-in-sequence variables, cooldown, players can turn a sequence off, looking up equals more height
+
+#If multiple jumpers apply to a player, only jumpers that add new trigger types to the player's existing trigger types will be added...
+  #...unless hold item thing. A jumper must have a name, a 'trigger' with at least one value, and a 'block-heights' with at least one entry.
+sequences:
+  test-dash:
+    triggers:
+      - 'rightclick'
+    sequence:
+      - "left:10 up:3 air:true"
+      - "up:5 air:true"
+
+#List of materials:
+#List of sounds:
+#List of particle effects:
+#List of status effects:
