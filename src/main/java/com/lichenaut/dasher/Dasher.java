@@ -17,9 +17,8 @@ public final class Dasher extends JavaPlugin {
 
     private Logger log;
     private String dataFolderPath;
-
-    HashMap<Integer, Double> yVelocities;
-    HashMap<Integer, Double> xzVelocities;
+    private HashMap<Integer, Double> yVelocities;
+    private HashMap<Integer, Double> xzVelocities;
 
     @Override
     public void onEnable() {
@@ -29,13 +28,14 @@ public final class Dasher extends JavaPlugin {
         saveDefaultConfig();
         Configuration config = getConfig();
 
+        //int pluginId = ;
+        //noinspection ALL
+        //Metrics metrics = new Metrics(plugin, pluginId);
+
         if (config.getBoolean("disable-plugin")) {
             log.info("Plugin disabled in config.yml.");
         } else {
-            new DUpdateChecker(this, plugin).getVersion(version -> {
-                if (this.getDescription().getVersion().equals(version)) {getLog().info("No new update available.");
-                } else {getLog().info("Update available.");}
-            });
+            new DUpdateChecker(this, plugin).getVersion(version -> {if (!this.getDescription().getVersion().equals(version)) {getLog().info("Update available.");}});
 
             dataFolderPath = getDataFolder().getPath();
 
@@ -49,12 +49,8 @@ public final class Dasher extends JavaPlugin {
             yVelocities = DVelocitiesBuilder.getYVelocities();
             xzVelocities = DVelocitiesBuilder.getXZVelocities();
 
-            Objects.requireNonNull(getCommand("dasher")).setExecutor(new DasherCommand(plugin));
+            Objects.requireNonNull(getCommand("dasher")).setExecutor(new DasherCommand(plugin));//reload command?
             Objects.requireNonNull(getCommand("dasher")).setTabCompleter(new DasherTabCompleter());
-
-            //int pluginId = ;
-            //noinspection ALL
-            //Metrics metrics = new Metrics(plugin, pluginId);
 
 
         }
@@ -62,9 +58,5 @@ public final class Dasher extends JavaPlugin {
 
     public Logger getLog() {return log;}
     public String getPluginFolderPath() {return dataFolderPath;}
-
-    public HashMap<Integer, Double> getVelocities(char direction) {
-        if (direction == 'y') {return yVelocities;
-        } else {return xzVelocities;}
-    }
+    public HashMap<Integer, Double> getVelocities(char axis) {if (axis == 'y') {return yVelocities;} else {return xzVelocities;}}
 }

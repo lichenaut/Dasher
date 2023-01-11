@@ -5,7 +5,8 @@ import java.util.HashMap;
 public class DVelocitiesBuilder {
 
     public static HashMap<Integer, Double> getYVelocities() {
-        HashMap<Integer, Double> yVelocities = new HashMap<>(60);
+        HashMap<Integer, Double> yVelocities = new HashMap<>(61);
+        yVelocities.put(0,0.0);
         yVelocities.put(1,0.369);
         yVelocities.put(2,0.545);
         yVelocities.put(3,0.685);
@@ -70,7 +71,8 @@ public class DVelocitiesBuilder {
     }
 
     public static HashMap<Integer, Double> getXZVelocities() {
-        HashMap<Integer, Double> xzVelocities = new HashMap<>(43);
+        HashMap<Integer, Double> xzVelocities = new HashMap<>(44);
+        xzVelocities.put(0,0.0);
         xzVelocities.put(1,0.093);
         xzVelocities.put(2,0.183);
         xzVelocities.put(3,0.273);

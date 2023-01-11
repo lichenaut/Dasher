@@ -1,7 +1,7 @@
 name: Dasher
 version: '1.0.0'
 main: com.lichenaut.dasher.Dasher
-api-version: 1.19
+api-version: 1.13
 authors: [ lichenaut ]
 description: Configure custom dash sequences.
 commands:

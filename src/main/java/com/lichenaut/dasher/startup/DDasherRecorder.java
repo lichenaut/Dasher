@@ -14,7 +14,7 @@ public class DDasherRecorder {
         return new HashSet<>(Objects.requireNonNull(plugin.getConfig().getConfigurationSection("sequences")).getKeys(false));
     }
 
-    public HashSet<String> getCacheSequences() {
+    //public HashSet<String> getCacheSequences() {
 
-    }
+    //}
 }

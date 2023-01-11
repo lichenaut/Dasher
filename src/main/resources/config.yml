@@ -34,7 +34,7 @@ world-sounds: true
 #    experience-cost: #
 #    add-momentum: true/false
 #    MONEY FEATURE COMING
-# invulnerability, no fall damage, sequence variables vs dash-in-sequence variables, cooldown, players can turn a sequence off, looking up equals more height
+# invulnerability, no fall damage, sequence variables vs dash-in-sequence variables, cooldown, players can turn a sequence off, looking up equals more height, teleport to floor, /top
 
 #If multiple jumpers apply to a player, only jumpers that add new trigger types to the player's existing trigger types will be added...
   #...unless hold item thing. A jumper must have a name, a 'trigger' with at least one value, and a 'block-heights' with at least one entry.
