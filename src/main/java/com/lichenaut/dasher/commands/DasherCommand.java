@@ -31,36 +31,44 @@ public class DasherCommand implements CommandExecutor {
         String fakeUnknown = ChatColor.RED + "Unknown or incomplete command, see below for error\n" + ChatColor.RED + ChatColor.UNDERLINE + arguments + ChatColor.RESET +
                 ChatColor.RED + ChatColor.ITALIC + "<--[HERE]";
 
-        if (sender instanceof Player && !sender.hasPermission("jumper.help") && !sender.hasPermission("jumper.jump")) {messageSender(sender, fakeUnknown);return false;}
+        if (sender instanceof Player && !sender.hasPermission("dasher.help") && !sender.hasPermission("dasher.dash") && !sender.hasPermission("dasher.reload")) {messageSender(sender, fakeUnknown);return false;}
         if (args.length == 0) {messageSender(sender, invalidMessage);return false;}
-        if (args[0].equals("help")) {
-            if (sender instanceof Player && !sender.hasPermission("jumper.help")) {messageSender(sender, fakeUnknown);return false;}
-            messageSender(sender, helpMessage);
-        } else if (args[0].equals("dash")) {
-            if (sender instanceof Player) {
-                if (!sender.hasPermission("jumper.jump")) {messageSender(sender, fakeUnknown);return false;}
-                Player p = (Player) sender;
-                Vector playerDirection = p.getLocation().getDirection();
-                double degrees = 180/Math.PI;
-                double playerLook = -Math.atan2(playerDirection.getZ(), playerDirection.getX())*degrees + 90;
-                if (playerLook < 0) {playerLook += 360;}
-                System.out.println("angle of player look: " + playerLook);
-                System.out.println("dash x: " + plugin.getVelocities('x').get(Integer.parseInt(args[1])));
-                System.out.println("dash z: " + plugin.getVelocities('z').get(Integer.parseInt(args[3])));
-                double dashAngle = 90 + Math.atan2(plugin.getVelocities('z').get(Integer.parseInt(args[3])), plugin.getVelocities('x').get(Integer.parseInt(args[1])))*degrees;
-                System.out.println("angle of dash: " + dashAngle);
-                double velocityLength = Math.sqrt(Math.pow(plugin.getVelocities('z').get(Integer.parseInt(args[3])), 2) + plugin.getVelocities('x').get(Integer.parseInt(args[1])));
-                System.out.println("velocity hypotenuse: " + velocityLength);
-                double newDashAngle = playerLook-dashAngle+90;
-                if (newDashAngle < 0) {newDashAngle += 360;}
-                System.out.println("new dash angle: " + newDashAngle);
-                double newZ = Math.cos(newDashAngle/degrees)*velocityLength;
-                double newX = Math.sin(newDashAngle/degrees)*velocityLength;
-                System.out.println("new dash z: " + newZ);
-                System.out.println("new dash x: " + newX);
-                p.setVelocity(new Vector(newX, plugin.getVelocities('y').get(Integer.parseInt(args[2])), newZ));
-            } else {messageSender(sender, onlyPlayerMessage);return false;}
-        } else {messageSender(sender, invalidMessage);}
+        switch (args[0]) {
+            case "help":
+                if (sender instanceof Player && !sender.hasPermission("dasher.help")) {messageSender(sender, fakeUnknown);return false;}
+                messageSender(sender, helpMessage);break;
+            case "dash":
+                if (sender instanceof Player) {
+                    if (!sender.hasPermission("dasher.dash")) {messageSender(sender, fakeUnknown);return false;}
+                    Player p = (Player) sender;
+                    Vector playerDirection = p.getLocation().getDirection();
+                    double degrees = 180 / Math.PI;
+                    double playerLook = -Math.atan2(playerDirection.getZ(), playerDirection.getX()) * degrees + 90;
+                    if (playerLook < 0) {playerLook += 360;}
+                    System.out.println("angle of player look: " + playerLook);
+                    System.out.println("dash x: " + plugin.getVelocities('x').get(Integer.parseInt(args[1])));
+                    System.out.println("dash z: " + plugin.getVelocities('z').get(Integer.parseInt(args[3])));
+                    double dashAngle = 90 + Math.atan2(plugin.getVelocities('z').get(Integer.parseInt(args[3])), plugin.getVelocities('x').get(Integer.parseInt(args[1]))) * degrees;
+                    System.out.println("angle of dash: " + dashAngle);
+                    double velocityLength = Math.sqrt(Math.pow(plugin.getVelocities('z').get(Integer.parseInt(args[3])), 2) + plugin.getVelocities('x').get(Integer.parseInt(args[1])));
+                    System.out.println("velocity hypotenuse: " + velocityLength);
+                    double newDashAngle = playerLook - dashAngle + 90;
+                    if (newDashAngle < 0) {newDashAngle += 360;}
+                    System.out.println("new dash angle: " + newDashAngle);
+                    double newZ = Math.cos(newDashAngle / degrees) * velocityLength;
+                    double newX = Math.sin(newDashAngle / degrees) * velocityLength;
+                    System.out.println("new dash z: " + newZ);
+                    System.out.println("new dash x: " + newX);
+                    p.setVelocity(new Vector(newX, plugin.getVelocities('y').get(Integer.parseInt(args[2])), newZ));
+                } else {messageSender(sender, onlyPlayerMessage);}break;
+            case "reload":
+                if (sender instanceof Player) {
+                    if (!sender.hasPermission("dasher.reload")) {messageSender(sender, fakeUnknown);return false;}
+                    plugin.reloadConfig();
+                } else {plugin.reloadConfig();}break;
+            default:
+                messageSender(sender, fakeUnknown);break;
+        }
         return false;
     }
 }

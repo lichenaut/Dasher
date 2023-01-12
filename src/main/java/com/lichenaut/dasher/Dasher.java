@@ -2,6 +2,8 @@ package com.lichenaut.dasher;
 
 import com.lichenaut.dasher.commands.DasherCommand;
 import com.lichenaut.dasher.commands.DasherTabCompleter;
+import com.lichenaut.dasher.sequence.DSequence;
+import com.lichenaut.dasher.startup.DDasherRecorder;
 import com.lichenaut.dasher.util.DDirectoryMaker;
 import com.lichenaut.dasher.util.DResourceCreator;
 import com.lichenaut.dasher.util.DUpdateChecker;
@@ -19,6 +21,7 @@ public final class Dasher extends JavaPlugin {
     private String dataFolderPath;
     private HashMap<Integer, Double> yVelocities;
     private HashMap<Integer, Double> xzVelocities;
+    private HashMap<String, DSequence> sequences;
 
     @Override
     public void onEnable() {
@@ -44,10 +47,15 @@ public final class Dasher extends JavaPlugin {
 
             DResourceCreator resourceCreator = new DResourceCreator(plugin);
             resourceCreator.createResource("README.txt");
-            resourceCreator.createResource("cache.txt");
 
             yVelocities = DVelocitiesBuilder.getYVelocities();
             xzVelocities = DVelocitiesBuilder.getXZVelocities();
+
+            DDasherRecorder recorder = new DDasherRecorder(plugin);
+            sequences = recorder.getConfigSequences();
+            if (!recorder.compareCacheSequences()) {
+                //clear cache, alert console
+            }
 
             Objects.requireNonNull(getCommand("dasher")).setExecutor(new DasherCommand(plugin));//reload command?
             Objects.requireNonNull(getCommand("dasher")).setTabCompleter(new DasherTabCompleter());

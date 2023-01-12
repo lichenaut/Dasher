@@ -43,8 +43,8 @@ sequences:
     triggers:
       - 'rightclick'
     sequence:
-      - "left:10 up:3 air:true"
-      - "up:5 air:true"
+      - "forward:10 up:10 air:true"
+      - "forward:10 up:2"
 
 #List of materials:
 #List of sounds:
