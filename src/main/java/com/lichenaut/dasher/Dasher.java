@@ -3,7 +3,7 @@ package com.lichenaut.dasher;
 import com.lichenaut.dasher.commands.DasherCommand;
 import com.lichenaut.dasher.commands.DasherTabCompleter;
 import com.lichenaut.dasher.sequence.DSequence;
-import com.lichenaut.dasher.startup.DDasherRecorder;
+import com.lichenaut.dasher.startup.DSequencesBuilder;
 import com.lichenaut.dasher.util.DDirectoryMaker;
 import com.lichenaut.dasher.util.DResourceCreator;
 import com.lichenaut.dasher.util.DUpdateChecker;
@@ -41,21 +41,13 @@ public final class Dasher extends JavaPlugin {
             new DUpdateChecker(this, plugin).getVersion(version -> {if (!this.getDescription().getVersion().equals(version)) {getLog().info("Update available.");}});
 
             dataFolderPath = getDataFolder().getPath();
-
-            DDirectoryMaker dirMaker = new DDirectoryMaker(plugin);
-            dirMaker.makeDir(dataFolderPath);
-
-            DResourceCreator resourceCreator = new DResourceCreator(plugin);
-            resourceCreator.createResource("README.txt");
+            new DDirectoryMaker(plugin).makeDir(dataFolderPath);
+            new DResourceCreator(plugin).createResource("README.txt");
 
             yVelocities = DVelocitiesBuilder.getYVelocities();
             xzVelocities = DVelocitiesBuilder.getXZVelocities();
 
-            DDasherRecorder recorder = new DDasherRecorder(plugin);
-            sequences = recorder.getConfigSequences();
-            if (!recorder.compareCacheSequences()) {
-                //clear cache, alert console
-            }
+            sequences = new DSequencesBuilder(plugin).getSequences();
 
             Objects.requireNonNull(getCommand("dasher")).setExecutor(new DasherCommand(plugin));//reload command?
             Objects.requireNonNull(getCommand("dasher")).setTabCompleter(new DasherTabCompleter());
@@ -65,6 +57,7 @@ public final class Dasher extends JavaPlugin {
     }
 
     public Logger getLog() {return log;}
-    public String getPluginFolderPath() {return dataFolderPath;}
+    public String getDataFolderPath() {return dataFolderPath;}
     public HashMap<Integer, Double> getVelocities(char axis) {if (axis == 'y') {return yVelocities;} else {return xzVelocities;}}
+    public HashMap<String, DSequence> getSequences() {return sequences;}
 }

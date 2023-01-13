@@ -1,6 +1,7 @@
 package com.lichenaut.dasher.sequence;
 
 import com.lichenaut.dasher.Dasher;
+import com.lichenaut.dasher.startup.DSequencesBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
@@ -9,16 +10,22 @@ import java.util.HashSet;
 
 public class DSequence {
 
+    private final Dasher plugin;
+    private final DSequencesBuilder builder;
+    private final String sequenceName;
     private boolean invalidSequence;
+    private HashMap<String, HashSet<String>> globalProperties;
+    private HashSet<String> strings;
 
-    public DSequence(Dasher plugin, String sequenceName) {
-        //'global' means 'the whole sequence', 'local' means 'only that dash'. left unmarked, if that property is in a local setting, it overrides the global version.
+    public DSequence(Dasher plugin, DSequencesBuilder builder, String sequenceName) {this.plugin = plugin;this.builder = builder;this.sequenceName = sequenceName;
+        //'global' means 'the whole sequence', 'local' means 'only that dash'
+        //'sequence', 'toggle-permission', and 'loops' are the only strictly global properties. the others can exist in either space, local versions override their global ones
         ConfigurationSection root = plugin.getConfig().getConfigurationSection("sequences").getConfigurationSection(sequenceName);
         invalidSequence = true;
 
-        HashSet<String> properties = new HashSet<>(root.getKeys(false));
+        HashSet<String> properties = new HashSet<>(root.getKeys(false));//names of properties
         if (!properties.contains("sequence") || !properties.contains("trigger")) {
-            plugin.getLog().warning("Make sure sequence '" + sequenceName + "' has both 'sequence' and 'trigger' fields! Skipping sequence.");return;}
+            plugin.getLog().warning("Make sure sequence '" + sequenceName + "' has valid 'sequence' and 'trigger' fields! Skipping sequence.");return;}
         if (properties.contains("tp-top") && properties.contains("tp-floor")) {
             plugin.getLog().warning("Make sure sequence '" + sequenceName + "' does not have both 'tp-top' and 'tp-floor' fields! Skipping sequence.");return;}
         if (properties.contains("forward") && properties.contains("backward")) {
@@ -28,76 +35,59 @@ public class DSequence {
         if (properties.contains("left") && properties.contains("right")) {
             plugin.getLog().warning("Make sure sequence '" + sequenceName + "' does not have both 'left' and 'right' fields! Skipping sequence.");return;}
 
-        HashMap<String, HashSet<String>> globalProperties = new HashMap<>();//refined version
+        globalProperties = new HashMap<>();//names of properties mapped to their string sets
 
-        HashSet<String> knownProperties = new HashSet<>(25);
-        knownProperties.add("toggle-permission");
-        knownProperties.add("cooldown");
-        knownProperties.add("permission");
-        knownProperties.add("trigger");
-        knownProperties.add("item-name");
-        knownProperties.add("item-material");
-        knownProperties.add("sound");
-        knownProperties.add("particle");
-        knownProperties.add("effect");
-        knownProperties.add("look-affects-height");
-        knownProperties.add("loops");
-        knownProperties.add("keep-momentum");
-        knownProperties.add("tp-top");
-        knownProperties.add("tp-floor");
-        knownProperties.add("forward");
-        knownProperties.add("backward");
-        knownProperties.add("up");
-        knownProperties.add("down");
-        knownProperties.add("left");
-        knownProperties.add("right");
-        knownProperties.add("damage");
-        knownProperties.add("experience");
-        knownProperties.add("invulnerable");
-        knownProperties.add("fall-damage");
-        knownProperties.add("buffer");
         for (String property : properties) {
-            if (!knownProperties.contains(property)) {
-                plugin.getLog().warning("Sequence '" + sequenceName + "' has an unknown property '" + property + "'! Skipping property.");continue;}
+            if (!builder.getKnownProperties().contains(property)) {
+                plugin.getLog().warning("Sequence '" + sequenceName + "' has unknown property '" + property + "'! Skipping property.");continue;}
 
-            HashSet<String> strings;
-            if (root.getStringList(property) != null) {
-                strings = new HashSet<>();
-                for (String string : root.getStringList(property)) {
-                    String permission = "default";
-                    String restOfString = string;
-                    if (string.split(" ")[0].contains(":")) {
-                        String[] splitString = string.split(":");
-                        permission = splitString[0];
-                        restOfString = splitString[1];
-                    }
-                    if (!strings.add(permission)) {
-                        if (permission.equals("default")) {
-                            plugin.getLog().warning("Sequence '" + sequenceName + "' has a property '" + property +
-                                    "' that has two fields with no permission (duplicate permission)! Skipping sequence.");
-                        } else {
-                         plugin.getLog().warning("Sequence '" + sequenceName + "' has a property '" + property + "' that has duplicate permission '" + permission +
-                                 "'! Skipping sequence.");
-                        }
-                        return;
-                    } else {strings.add(permission + ":" + restOfString);}
+            HashSet<String> propertyStrings = new HashSet<>(root.getStringList(property));//string set of a property
+            strings = new HashSet<>();//refined version
+            if (!propertyStrings.isEmpty()) {
+                switch (getRefinedStrings(property, propertyStrings)) {
+                    case 1: continue;
+                    case 2: return;
                 }
                 strings.removeIf(string -> !string.contains(":"));
-            } else {plugin.getLog().warning("Sequence '" + sequenceName + "' has null property '" + property + "'! Skipping sequence.");return;}
-
-            globalProperties.put(property, strings);break;
+            } else {plugin.getLog().warning("Sequence '" + sequenceName + "' has null property '" + property + "'! Skipping property.");continue;}
+            globalProperties.put(property, new HashSet<>(strings));
         }
 
         ArrayList<DDash> dashes = new ArrayList<>();
-        for (String dash : root.getStringList("sequence")) {dashes.add(new DDash(plugin, globalProperties, dash));}//add knownProperties to Dash
+        for (String dash : new HashSet<>(root.getStringList("sequence"))) {dashes.add(new DDash(plugin, this, dash));}
         invalidSequence = false;
     }
 
-    HashSet<String> togglePermissions;
+    public byte getRefinedStrings(String property, HashSet<String> propertyStrings) {//'0' = all good, '1' = skip property, '2' = skip sequence
+        for (String string : propertyStrings) {
+            if (string.contains(" ") && builder.getNoSpacesProperties().contains(property)) {
+                plugin.getLog().warning("Sequence '" + sequenceName + "' has property '" + property +
+                        "' that has at least one space (it should not have any)! Skipping property.");return 1;}
+            if (string.contains(":") && builder.getNoColonProperties().contains(property)) {
+                plugin.getLog().warning("Sequence '" + sequenceName + "' has permission-related property '" + property +
+                        "' that has at least one colon (it should not have any)! Skipping property.");return 1;}
 
-    public void setGlobalProperties(HashMap<String, Object> globalProperties) {
-
+            String permission = "default";
+            String restOfString = string;
+            if (string.split(" ")[0].contains(":")) {
+                String[] splitString = string.split(":", 2);
+                permission = splitString[0];
+                restOfString = splitString[1];
+            }
+            if (!strings.add(permission)) {
+                if (permission.equals("default")) {
+                    plugin.getLog().warning("Sequence '" + sequenceName + "' has property '" + property +
+                            "' that has two fields with no permission (duplicate permission)! Skipping sequence.");
+                } else {
+                    plugin.getLog().warning("Sequence '" + sequenceName + "' has property '" + property + "' that has duplicate of permission '" + permission +
+                            "'! Skipping sequence.");
+                }
+                return 2;
+            } else {strings.add(permission + ":" + restOfString);}
+        }
+        return 0;
     }
 
     public boolean isInvalid() {return invalidSequence;}
+    public HashMap<String, HashSet<String>> getGlobalProperties() {return globalProperties;}
 }

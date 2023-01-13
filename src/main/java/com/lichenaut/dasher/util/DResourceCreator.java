@@ -13,7 +13,7 @@ public class DResourceCreator {
     public DResourceCreator(Dasher plugin) {this.plugin = plugin;}
 
     public void createResource(String resourceName) {
-        String resourcePath = plugin.getPluginFolderPath() + DFileSeparatorGetter.getSeparator() + resourceName;
+        String resourcePath = plugin.getDataFolderPath() + DFileSeparatorGetter.getSeparator() + resourceName;
         if (!new File(resourcePath).exists()) {
             try {
                 DCopier.byteCopy(Objects.requireNonNull(plugin.getResource(resourceName)), resourcePath);

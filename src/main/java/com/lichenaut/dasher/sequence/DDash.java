@@ -7,7 +7,9 @@ import java.util.HashSet;
 
 public class DDash {
 
-    public DDash(Dasher plugin, HashMap<String, HashSet<String>> globalProperties, String dash) {
+    private HashMap<String, HashSet<String>> localProperties;
+
+    public DDash(Dasher plugin, DSequence sequence, String dash) {
 
     }
 }
