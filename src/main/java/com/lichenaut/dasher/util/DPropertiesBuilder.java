@@ -35,6 +35,46 @@ public class DPropertiesBuilder {
         return knownProperties;
     }
 
+    public static HashSet<String> getStringProperties() {
+        HashSet<String> stringProperties = new HashSet<>(9);
+        stringProperties.add("toggle-permission");
+        stringProperties.add("permission");
+        stringProperties.add("trigger");
+        stringProperties.add("item-name");
+        stringProperties.add("item-material");
+        stringProperties.add("sound");
+        stringProperties.add("particle");
+        stringProperties.add("effect");
+        stringProperties.add("look-affects-height");
+        return stringProperties;
+    }
+
+    public static HashSet<String> getIntProperties() {
+        HashSet<String> intProperties = new HashSet<>(12);
+        intProperties.add("cooldown");
+        intProperties.add("forward");
+        intProperties.add("backward");
+        intProperties.add("up");
+        intProperties.add("down");
+        intProperties.add("left");
+        intProperties.add("right");
+        intProperties.add("damage");
+        intProperties.add("experience");
+        intProperties.add("invulnerable");
+        intProperties.add("fall-damage");
+        intProperties.add("buffer");
+        return intProperties;
+    }
+
+    public static HashSet<String> getBooleanProperties() {
+        HashSet<String> booleanProperties = new HashSet<>(4);
+        booleanProperties.add("loops");
+        booleanProperties.add("keep-momentum");
+        booleanProperties.add("tp-top");
+        booleanProperties.add("tp-floor");
+        return booleanProperties;
+    }
+
     public static HashSet<String> getNoSpacesProperties() {
         HashSet<String> noSpacesProperties = new HashSet<>(19);
         noSpacesProperties.add("toggle-permission");
