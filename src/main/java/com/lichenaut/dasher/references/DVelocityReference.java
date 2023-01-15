@@ -1,8 +1,8 @@
-package com.lichenaut.dasher.util;
+package com.lichenaut.dasher.references;
 
 import java.util.HashMap;
 
-public class DVelocitiesBuilder {
+public class DVelocityReference {
 
     public static HashMap<Integer, Double> getYVelocities() {
         HashMap<Integer, Double> yVelocities = new HashMap<>(61);

@@ -1,7 +1,7 @@
 package com.lichenaut.dasher.sequence;
 
 import com.lichenaut.dasher.Dasher;
-import com.lichenaut.dasher.util.DPropertiesBuilder;
+import com.lichenaut.dasher.references.DPropertyReference;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,10 +35,11 @@ public class DDash {
             }
         }
 
-        localProperties = sequence.getGlobalProperties();
+        localProperties = new HashMap<>();
+        localProperties.putAll(sequence.getGlobalProperties());
         for (String property : properties) {
             String[] propertyFields = property.split(":", 2);
-            if (DPropertiesBuilder.getKnownProperties().contains(propertyFields[0])) {localProperties.put(propertyFields[0], propertyFields[1]);
+            if (DPropertyReference.getKnownProperties().contains(propertyFields[0])) {localProperties.put(propertyFields[0], propertyFields[1]);
             } else {plugin.getLog().warning("Sequence '" + sequence.getSequenceName() + "', dash '" + dash + "' has unknown property '" + propertyFields[0] +
                     "'! Skipping sequence.");return;
             }

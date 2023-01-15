@@ -1,8 +1,7 @@
 package com.lichenaut.dasher.sequence;
 
 import com.lichenaut.dasher.Dasher;
-import com.lichenaut.dasher.startup.DSequencesBuilder;
-import com.lichenaut.dasher.util.DPropertiesBuilder;
+import com.lichenaut.dasher.references.DPropertyReference;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
@@ -47,19 +46,33 @@ public class DSequence {
 
         globalProperties = new HashMap<>();//names of properties mapped to their values
         for (String property : properties) {
-            if (!property.equals("permission")) {
-                if (DPropertiesBuilder.getStringProperties().contains(property)) {globalProperties.put(property, root.getString(property));
-                } else if (DPropertiesBuilder.getIntProperties().contains(property)) {globalProperties.put(property, root.getInt(property));
-                } else if (DPropertiesBuilder.getBooleanProperties().contains(property)) {globalProperties.put(property, root.getBoolean(property));
+            if (!property.equals("sequence")) {
+                Object propertyValue;
+                if (DPropertyReference.getIntProperties().contains(property)) {
+                    propertyValue = root.getInt(property);
+                    if ((property.equals("forward") || property.equals("backward") || property.equals("left") || property.equals("right")) && (int) propertyValue > 43) {
+                        plugin.getLog().warning("Make sure sequence '" + sequenceName + "', property '" + property + "' does not exceed 43! Skipping sequence.");return;
+                    } else if ((property.equals("up") || property.equals("down")) && (int) propertyValue > 60) {
+                        plugin.getLog().warning("Make sure sequence '" + sequenceName + "', property '" + property + "' does not exceed 60! Skipping sequence.");return;}
+                } else if (DPropertyReference.getStringProperties().contains(property)) {propertyValue = root.getString(property);
+                } else if (DPropertyReference.getBooleanProperties().contains(property)) {propertyValue = root.getBoolean(property);
                 } else {plugin.getLog().warning("Sequence '" + sequenceName + "' has unknown property '" + property + "'! Skipping sequence.");return;}
+
+                if (propertyValue.toString().contains(" ") && DPropertyReference.getNoSpacesProperties().contains(property)) {
+                    plugin.getLog().warning("Make sure sequence '" + sequenceName + "', property '" + property + "' does not have a space! Skipping sequence.");return;}
+                if (propertyValue.toString().contains(",") && DPropertyReference.getNoCommaProperties().contains(property)) {
+                    plugin.getLog().warning("Make sure sequence '" + sequenceName + "', property '" + property + "' does not have a comma! Skipping sequence.");return;}
+                if (propertyValue.toString().contains(":") && DPropertyReference.getNoColonProperties().contains(property)) {
+                    plugin.getLog().warning("Make sure sequence '" + sequenceName + "', property '" + property + "' does not have a colon! Skipping sequence.");return;}
+
+                globalProperties.put(property, propertyValue);
             }
         }
 
         dashes = new ArrayList<>();
-        for (String dash : new HashSet<>(root.getStringList("sequence"))) {
+        for (String dash : root.getStringList("sequence")) {
             dashes.add(new DDash(plugin, this, dash));
-            int current = dashes.size()-1;
-            if (dashes.get(current).isInvalid()) {return;}
+            if (dashes.get(dashes.size()-1).isInvalid()) {return;}
         }
         invalidSequence = false;
     }

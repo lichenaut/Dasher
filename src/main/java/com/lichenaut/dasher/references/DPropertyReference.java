@@ -1,8 +1,8 @@
-package com.lichenaut.dasher.util;
+package com.lichenaut.dasher.references;
 
 import java.util.HashSet;
 
-public class DPropertiesBuilder {
+public class DPropertyReference {
 
     public static HashSet<String> getKnownProperties() {
         HashSet<String> knownProperties = new HashSet<>(26);
@@ -32,21 +32,8 @@ public class DPropertiesBuilder {
         knownProperties.add("invulnerable");
         knownProperties.add("fall-damage");
         knownProperties.add("buffer");
+        knownProperties.add("in-air");
         return knownProperties;
-    }
-
-    public static HashSet<String> getStringProperties() {
-        HashSet<String> stringProperties = new HashSet<>(9);
-        stringProperties.add("toggle-permission");
-        stringProperties.add("permission");
-        stringProperties.add("trigger");
-        stringProperties.add("item-name");
-        stringProperties.add("item-material");
-        stringProperties.add("sound");
-        stringProperties.add("particle");
-        stringProperties.add("effect");
-        stringProperties.add("look-affects-height");
-        return stringProperties;
     }
 
     public static HashSet<String> getIntProperties() {
@@ -66,12 +53,27 @@ public class DPropertiesBuilder {
         return intProperties;
     }
 
+    public static HashSet<String> getStringProperties() {
+        HashSet<String> stringProperties = new HashSet<>(9);
+        stringProperties.add("toggle-permission");
+        stringProperties.add("permission");
+        stringProperties.add("trigger");
+        stringProperties.add("item-name");
+        stringProperties.add("item-material");
+        stringProperties.add("sound");
+        stringProperties.add("particle");
+        stringProperties.add("effect");
+        stringProperties.add("look-affects-height");
+        return stringProperties;
+    }
+
     public static HashSet<String> getBooleanProperties() {
         HashSet<String> booleanProperties = new HashSet<>(4);
         booleanProperties.add("loops");
         booleanProperties.add("keep-momentum");
         booleanProperties.add("tp-top");
         booleanProperties.add("tp-floor");
+        booleanProperties.add("in-air");
         return booleanProperties;
     }
 
@@ -99,7 +101,15 @@ public class DPropertiesBuilder {
         return noSpacesProperties;
     }
 
-    public static HashSet<String> getNoColonProperties() {
+    public static HashSet<String> getNoCommaProperties() {//other properties shouldn't have commas, but this is just to protect against confusion with these properties in particular
+        HashSet<String> noCommaProperties = new HashSet<>(3);
+        noCommaProperties.add("toggle-permission");
+        noCommaProperties.add("permission");
+        noCommaProperties.add("look-affects-height");
+        return noCommaProperties;
+    }
+
+    public static HashSet<String> getNoColonProperties() {//same as comma variant
         HashSet<String> noColonProperties = new HashSet<>(2);
         noColonProperties.add("toggle-permission");
         noColonProperties.add("permission");

@@ -1,4 +1,4 @@
-package com.lichenaut.dasher.startup;
+package com.lichenaut.dasher.sequence;
 
 import com.lichenaut.dasher.Dasher;
 import com.lichenaut.dasher.sequence.DSequence;
