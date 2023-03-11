@@ -31,7 +31,7 @@ public final class Dasher extends JavaPlugin {
     private HashMap<String, DSequence> sequences;
 
     @Override
-    public void onEnable() {
+    public void onEnable() {//I am back!
         final Dasher plugin = this;
         log = getLogger();
         getConfig().options().copyDefaults();
